@@ -6,3 +6,6 @@ bin/game.o: src/game.c
 
 bin/board.o: src/board.c
 	cc -g -o bin/board.o -c src/board.c
+
+clean:
+	rm ./bin/*

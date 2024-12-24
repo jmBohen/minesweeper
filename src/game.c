@@ -3,8 +3,8 @@
 #include "board.h"
 
 int main(){
-    Board board = malloc(sizeof(*board));
-    set_settings(board);
+    Board game;
+    start_game(game);
 
     return 0;
 }

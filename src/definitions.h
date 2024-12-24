@@ -17,8 +17,8 @@
 
 //large board | difficult mode
 #define LARGE_SYMBOL 'D' //difficult
-#define LARGE_BOARD_R 16
-#define LARGE_BOARD_C 30
+#define LARGE_BOARD_R 30
+#define LARGE_BOARD_C 16
 #define LARGE_TIME_MINUTES 40
 #define LARGE_NUMBER_OF_MINES 99
 
@@ -34,5 +34,11 @@
 #define SETTINGS_QUERY "Please choose the dificulty of your game:\n'e' - easy (9x9)\n'm' - medium (16x16)\n'd' - diffiuclt (30x16)\n'c' - custom\n-> "
 #define CUSTOM_SETTINGS_QUERY_R "Enter number of rows (3 - 24): "
 #define CUSTOM_SETTINGS_QUERY_C "Enter number of columns (3 - 30): "
+
+//chars for board printing
+#define UNREVEALED_CHAR (char)'#'
+#define FLAG_CHAR (char)'F'
+#define REVEALED_CLEAR_CHAR (char)' '
+#define MINE_CHAR (char)'*'
 
 #endif
