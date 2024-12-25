@@ -17,7 +17,9 @@ typedef struct {
     int time_in_minutes;
     Square *squares;
     int num_mines;
-    
+    int number_of_revealed_squares;
+    char difficulty;
+
 } *Board;
 
 //creating empty board ready for first click; includes set settings
@@ -50,4 +52,7 @@ void increase_number_of_neighbour_mines_for_neighbours(Board board, int r, int c
 
 //get list of neighbours for coordinates
 int** get_neighbours(Board board, int r, int c);
+
+void finish_game(Board board);
+
 #endif
