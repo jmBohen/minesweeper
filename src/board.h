@@ -29,6 +29,8 @@ void set_settings(Board board);
 //reveal clicked square
 void reveal_square(Board board, int r, int c);
 
+void flag_square(Board board, int r, int c);
+
 //sets up board after first click
 void initialize_board(Board board, int r, int c);
 
@@ -36,6 +38,9 @@ void initialize_board(Board board, int r, int c);
 void print_board(Board board);
 
 void dev_print_board(Board board);
+
+//checks if you won the game and unreaveld all clear squares
+int is_finished(Board board);
 
 //starts the game
 void start_game(Board board);

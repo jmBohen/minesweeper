@@ -172,6 +172,12 @@ void reveal_square(Board board, int r, int c){
         exit(EXIT_SUCCESS);
     }
 
+    if(is_finished(board)){
+        print_board(board);
+        printf("YOU WON!\n");
+        exit(EXIT_SUCCESS);
+    }
+
     //if doesnt have neighbouring mines - reveal neighbour squares
     if (!(board -> squares[r * board -> size_r + c] -> number_of_neighbour_mines)){
         int **neighbours = get_neighbours(board, r, c);
@@ -181,6 +187,23 @@ void reveal_square(Board board, int r, int c){
     }
 }
 
+
+void flag_square(Board board, int r, int c){
+    if (board -> squares[r * board -> size_r + c] -> is_flagged){
+        board -> squares[r * board -> size_r + c] -> is_flagged = 0;
+    } else {
+        board -> squares[r * board -> size_r + c] -> is_flagged = 1;
+    }
+    
+}
+
+
+int is_finished(Board board){
+    for (int i = 0; i < board -> size_c * board -> size_r; i++){
+        if( !(board -> squares[i] -> is_revealed) && !(board -> squares[i] -> is_mine)) return 0;
+    }
+    return 1;
+}
 
 //sets up board after first click
 void initialize_board(Board board, int r, int c){
@@ -298,17 +321,32 @@ void dev_print_board(Board board){
 
 //starts the game
 void start_game(Board board){
-
+    int r;
+    int c;
     board = create_empty_board();
     print_board(board);
 
-    //first click
-    initialize_board(board, 2, 2);
-    print_board(board);
+    printf("\nWhich row to click: ");
+    scanf("%d", &r);
+    printf("Which column to click: ");
+    scanf("%d", &c);
 
-    // next clicks as follows:
-    reveal_square(board, 4, 5);
-    print_board(board);
+    //first click
+    initialize_board(board, r-1, c-1);
+
+
+    while (1){
+        print_board(board);
+
+        printf("\nWhich row to click: ");
+        scanf("%d", &r);
+        printf("Which column to click: ");
+        scanf("%d", &c);
+
+        //TODO: getting input
+        //flag_square(board, r-1, c-1);
+        //reveal_square(board, r-1, c-1);
+    }
 
 }
 
