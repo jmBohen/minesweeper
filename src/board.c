@@ -167,6 +167,7 @@ void reveal_square(Board board, int r, int c){
 
     //if mine then game over
     if (board -> squares[r * board -> size_r + c] -> is_mine){
+        print_board(board);
         printf("\nGAME OVER\n");
         exit(EXIT_SUCCESS);
     }
@@ -235,7 +236,7 @@ void increase_number_of_neighbour_mines_for_neighbours(Board board, int r, int c
 // prints board as covered matrix
 void print_board(Board board){
     
-    printf("||");
+    printf("\n\n||");
     for (int i = 0; i < board -> size_r; i++){printf("=");}
     printf("||\n");
 
@@ -261,7 +262,7 @@ void print_board(Board board){
 
     printf("||");
     for (int i = 0; i < board -> size_r; i++){printf("=");}
-    printf("||\n");
+    printf("||\n\n");
 }
 // prints board as uncovered matrix
 void dev_print_board(Board board){
@@ -297,9 +298,16 @@ void dev_print_board(Board board){
 
 //starts the game
 void start_game(Board board){
+
     board = create_empty_board();
     print_board(board);
+
+    //first click
     initialize_board(board, 2, 2);
+    print_board(board);
+
+    // next clicks as follows:
+    reveal_square(board, 4, 5);
     print_board(board);
 
 }
