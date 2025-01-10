@@ -78,6 +78,7 @@ void set_settings(Board board){
         //setting up default small board
         case SMALL_SYMBOL:
             while(getchar() != '\n');
+            board -> difficulty = SMALL_SYMBOL;
             board -> size_c = SMALL_BOARD;
             board -> size_r = SMALL_BOARD;
             board -> number_of_mines = SMALL_NUMBER_OF_MINES;
@@ -86,6 +87,7 @@ void set_settings(Board board){
         //setting up default medium board
         case MEDIUM_SYMBOL:
             while(getchar() != '\n');
+            board -> difficulty = MEDIUM_SYMBOL;
             board -> size_c = MEDIUM_BOARD;
             board -> size_r  = MEDIUM_BOARD;
             board -> number_of_mines = MEIDUM_NUMBER_OF_MINES;
@@ -94,6 +96,7 @@ void set_settings(Board board){
         //setting up default large board
         case LARGE_SYMBOL:
             while(getchar() != '\n');
+            board -> difficulty = LARGE_SYMBOL;
             board -> size_c = LARGE_BOARD_C;
             board -> size_r = LARGE_BOARD_R;
             board -> number_of_mines = LARGE_NUMBER_OF_MINES;
@@ -103,6 +106,7 @@ void set_settings(Board board){
         //setting up custom board
         case CUSTOM_SYMBOL:
             while(getchar() != '\n');
+            board -> difficulty = CUSTOM_SYMBOL;
             int number;
             while(1){
                 printf(CUSTOM_SETTINGS_QUERY_R);
@@ -164,10 +168,20 @@ void reveal_square(Board board, int r, int c){
 
     //set square as revealed
     board -> squares[r * board -> size_r + c] -> is_revealed = 1;
+    board -> number_of_revealed_squares++;
 
     //if mine then game over
     if (board -> squares[r * board -> size_r + c] -> is_mine){
+        print_board(board);
         printf("\nGAME OVER\n");
+        finish_game(board);
+        exit(EXIT_SUCCESS);
+    }
+
+    if(is_finished(board)){
+        print_board(board);
+        printf("YOU WON!\n");
+        finish_game(board);
         exit(EXIT_SUCCESS);
     }
 
@@ -180,6 +194,23 @@ void reveal_square(Board board, int r, int c){
     }
 }
 
+
+void flag_square(Board board, int r, int c){
+    if (board -> squares[r * board -> size_r + c] -> is_flagged){
+        board -> squares[r * board -> size_r + c] -> is_flagged = 0;
+    } else {
+        board -> squares[r * board -> size_r + c] -> is_flagged = 1;
+    }
+    
+}
+
+
+int is_finished(Board board){
+    for (int i = 0; i < board -> size_c * board -> size_r; i++){
+        if( !(board -> squares[i] -> is_revealed) && !(board -> squares[i] -> is_mine)) return 0;
+    }
+    return 1;
+}
 
 //sets up board after first click
 void initialize_board(Board board, int r, int c){
@@ -235,7 +266,7 @@ void increase_number_of_neighbour_mines_for_neighbours(Board board, int r, int c
 // prints board as covered matrix
 void print_board(Board board){
     
-    printf("||");
+    printf("\n\n||");
     for (int i = 0; i < board -> size_r; i++){printf("=");}
     printf("||\n");
 
@@ -261,12 +292,12 @@ void print_board(Board board){
 
     printf("||");
     for (int i = 0; i < board -> size_r; i++){printf("=");}
-    printf("||\n");
+    printf("||\n\n");
 }
 // prints board as uncovered matrix
 void dev_print_board(Board board){
     
-    printf("||");
+    printf("\n\n||");
     for (int i = 0; i < board -> size_r; i++){printf("=");}
     printf("||\n");
 
@@ -297,10 +328,56 @@ void dev_print_board(Board board){
 
 //starts the game
 void start_game(Board board){
+    int r;
+    int c;
     board = create_empty_board();
     print_board(board);
-    initialize_board(board, 2, 2);
-    print_board(board);
+
+    printf("\nWhich row to click: ");
+    scanf("%d", &r);
+    printf("Which column to click: ");
+    scanf("%d", &c);
+
+    //first click
+    initialize_board(board, r-1, c-1);
+
+
+    while (1){
+        print_board(board);
+
+        printf("\nWhich row to click: ");
+        scanf("%d", &r);
+        printf("Which column to click: ");
+        scanf("%d", &c);
+
+        //TODO: getting input
+        //flag_square(board, r-1, c-1);
+        reveal_square(board, r-1, c-1);
+    }
 
 }
 
+//calculate score and get name
+void finish_game(Board board){
+    float difficulty_factor = 0;
+
+    switch (board -> difficulty){
+        case SMALL_SYMBOL:
+            difficulty_factor = 1.0;
+            break;
+        case MEDIUM_SYMBOL:
+            difficulty_factor = 1.5;
+            break;
+        case LARGE_SYMBOL:
+            difficulty_factor = 2.0;
+            break;
+        case CUSTOM_SYMBOL:
+            difficulty_factor = 1.25;
+            break;
+    }
+    int score = board -> number_of_revealed_squares * difficulty_factor * 100;
+
+    printf("SCORE: %d\n", score);
+    //TODO get_name
+
+}
