@@ -1,11 +1,27 @@
-bin/minesweeper: bin/game.o bin/board.o
-	cc -g -o bin/minesweeper bin/game.o bin/board.o
+# ncurses library is required to compile this program.
+install_ncurses:
+	@echo "Checking for ncurses..."
+	@if ! ldconfig -p | grep -q libncurses; then \
+		echo "ncurses is not installed. Installing..."; \
+		sudo apt-get update && sudo apt-get install -y libncurses5-dev libncursesw5-dev; \
+	else \
+		echo "ncurses is installed."; \
+	fi
+
+CC = cc
+LDFLAGS = -lncurses
+
+bin/minesweeper: bin/game.o bin/board.o bin/user_interface.o
+	$(CC) -o bin/minesweeper bin/game.o bin/board.o bin/user_interface.o $(LDFLAGS)
 
 bin/game.o: src/game.c
-	cc -g -o bin/game.o -c src/game.c
+	$(CC) -o bin/game.o -c src/game.c
 
 bin/board.o: src/board.c
-	cc -g -o bin/board.o -c src/board.c
+	$(CC) -o bin/board.o -c src/board.c
+
+bin/user_interface.o: src/user_interface.c
+	$(CC) -o bin/user_interface.o -c src/user_interface.c
 
 clean:
-	rm ./bin/*
+	rm -f bin/*

@@ -14,8 +14,8 @@
 //medium board | medium mode
 #define MEDIUM_SYMBOL 'M' 
 #define MEDIUM_BOARD 16
-#define MEIDUM_TIME_MINUTES 20
-#define MEIDUM_NUMBER_OF_MINES 40
+#define MEDIUM_TIME_MINUTES 20
+#define MEDIUM_NUMBER_OF_MINES 40
 //about 15,6% of the board is mines
 
 

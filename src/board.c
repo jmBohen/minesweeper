@@ -1,9 +1,11 @@
 #include "board.h"
 #include "definitions.h"
+#include "user_interface.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <time.h>
+#include <ncurses.h>
 
 
 //creating empty board ready for first click; includes set settings
@@ -19,6 +21,7 @@ Board create_empty_board(){
         board -> squares[i] -> is_revealed = 0;
         board -> squares[i] -> is_mine = 0;
         board -> squares[i] -> is_flagged = 0;
+        board -> squares[i] -> number_of_neighbour_mines = 0;
     }
     return board;
 }
@@ -67,95 +70,97 @@ int** get_neighbours(Board board, int r, int c){
 
 
 // setting up the game settings: board size, number of mines, time
-void set_settings(Board board){
-    char symbol;
-    while(1){
-        printf(SETTINGS_QUERY);
-        
+void set_settings(Board board) {
+    char symbol = '\0';
+    int number = 0;
+
+    while (1) {
+        printw(SETTINGS_QUERY);
+        refresh();
+
         // get char and make it upper case
-        switch (toupper(symbol = getchar()))
-        {
-        //setting up default small board
-        case SMALL_SYMBOL:
-            while(getchar() != '\n');
-            board -> difficulty = SMALL_SYMBOL;
-            board -> size_c = SMALL_BOARD;
-            board -> size_r = SMALL_BOARD;
-            board -> number_of_mines = SMALL_NUMBER_OF_MINES;
-            board -> time_in_minutes = SMALL_TIME_MINUTES;
-            return;
-        //setting up default medium board
-        case MEDIUM_SYMBOL:
-            while(getchar() != '\n');
-            board -> difficulty = MEDIUM_SYMBOL;
-            board -> size_c = MEDIUM_BOARD;
-            board -> size_r  = MEDIUM_BOARD;
-            board -> number_of_mines = MEIDUM_NUMBER_OF_MINES;
-            board -> time_in_minutes = MEIDUM_TIME_MINUTES;
-            return;
-        //setting up default large board
-        case LARGE_SYMBOL:
-            while(getchar() != '\n');
-            board -> difficulty = LARGE_SYMBOL;
-            board -> size_c = LARGE_BOARD_C;
-            board -> size_r = LARGE_BOARD_R;
-            board -> number_of_mines = LARGE_NUMBER_OF_MINES;
-            board -> time_in_minutes = LARGE_TIME_MINUTES;
-            return;
+        symbol = toupper(getch());
 
-        //setting up custom board
-        case CUSTOM_SYMBOL:
-            while(getchar() != '\n');
-            board -> difficulty = CUSTOM_SYMBOL;
-            int number;
-            while(1){
-                printf(CUSTOM_SETTINGS_QUERY_R);
-                if(scanf("%d", &number) != 1) {
-                    while(getchar() != '\n');
-                    printf("Invalid input. Please enter an integer.\n");
-                    continue;
-                }
-                else if(!(number >= MINIMUM_SIZE && number <= MAXIMUM_SIZE_R)) {
-                    printf("Number %d is not in range\n", number);
-                    while(getchar() != '\n');
-                    continue;
-                }
-                else {
+        switch (symbol) {
+            case SMALL_SYMBOL:
+                board->difficulty = SMALL_SYMBOL;
+                board->size_c = SMALL_BOARD;
+                board->size_r = SMALL_BOARD;
+                board->number_of_mines = SMALL_NUMBER_OF_MINES;
+                board->time_in_minutes = SMALL_TIME_MINUTES;
+                refresh();
+                return;
+
+            case MEDIUM_SYMBOL:
+                board->difficulty = MEDIUM_SYMBOL;
+                board->size_c = MEDIUM_BOARD;
+                board->size_r = MEDIUM_BOARD;
+                board->number_of_mines = MEDIUM_NUMBER_OF_MINES;
+                board->time_in_minutes = MEDIUM_TIME_MINUTES;
+                refresh();
+                return;
+
+            case LARGE_SYMBOL:
+                board->difficulty = LARGE_SYMBOL;
+                board->size_c = LARGE_BOARD_C;
+                board->size_r = LARGE_BOARD_R;
+                board->number_of_mines = LARGE_NUMBER_OF_MINES;
+                board->time_in_minutes = LARGE_TIME_MINUTES;
+                refresh();
+                return;
+
+            case CUSTOM_SYMBOL:
+                board->difficulty = CUSTOM_SYMBOL;
+
+                while (1) {
+                    printw(CUSTOM_SETTINGS_QUERY_R);
+                    refresh();
+                    if (scanw("%d", &number) != 1) {
+                        printw("Invalid input. Please enter an integer.\n");
+                        while (getch() != '\n');
+                        refresh();
+                        continue;
+                    }
+                    if (number >= MINIMUM_SIZE && number <= MAXIMUM_SIZE_R) {
+                        printw("Number %d is out of range.\n", number);
+                        refresh();
+                        continue;
+                    }
+                    board->size_r = number;
                     break;
                 }
-            }
-            board -> size_c = number;
-            
-            while(1){
-                printf(CUSTOM_SETTINGS_QUERY_C);
-                if(scanf("%d", &number) != 1) {
-                    while(getchar() != '\n'); // clear invalid input
-                    printf("Invalid input. Please enter an integer.\n");
-                    fflush(stdout);
-                    continue;
-                }
-                else if(!(number >= MINIMUM_SIZE && number <= MAXIMUM_SIZE_C)) {
-                    printf("Number %d is not in range\n", number);
-                    while(getchar() != '\n');
-                }
-                else {
+
+                while (1) {
+                    printw(CUSTOM_SETTINGS_QUERY_C);
+                    refresh();
+                    if (scanw("%d", &number) != 1) {
+                        printw("Invalid input. Please enter an integer.\n");
+                        while(getch() != '\n');  // clear invalid input
+                        refresh();
+                        continue;
+                    }
+                    if (number < MINIMUM_SIZE || number > MAXIMUM_SIZE_C) {
+                        printw("Number %d is out of range.\n", number);
+                        refresh();
+                        continue;
+                    }
+                    board->size_c = number;
                     break;
                 }
-            }// clear invalid input
-            board -> size_r = number;
 
-            board -> time_in_minutes = CUSTOM_TIME_MINUTES(board -> size_c, board -> size_r);
-            board -> number_of_mines = CUSTOM_NUMBER_OF_MINES(board -> size_c, board -> size_r);
-            return;
+                board -> time_in_minutes = CUSTOM_TIME_MINUTES(board -> size_c, board -> size_r);
+                board -> number_of_mines = CUSTOM_NUMBER_OF_MINES(board -> size_c, board -> size_r);
+                return;
 
-        default:
-            while(getchar() != '\n');
-            printf("Please enter correct input!\n");
-            break;
+            default:
+                printw("Invalid option. Please try again.\n");
+                refresh();
+                break;
         }
+        clear();
     }
-    
 }
+
 
 
 //on square click
@@ -173,14 +178,16 @@ void reveal_square(Board board, int r, int c){
     //if mine then game over
     if (board -> squares[r * board -> size_r + c] -> is_mine){
         print_board(board);
-        printf("\nGAME OVER\n");
+        printw("\nGAME OVER\n");
+        refresh();
         finish_game(board);
         exit(EXIT_SUCCESS);
     }
 
     if(is_finished(board)){
         print_board(board);
-        printf("YOU WON!\n");
+        printw("YOU WON!\n");
+        refresh();
         finish_game(board);
         exit(EXIT_SUCCESS);
     }
@@ -262,76 +269,13 @@ void increase_number_of_neighbour_mines_for_neighbours(Board board, int r, int c
     }
 }
 
-
-// prints board as covered matrix
-void print_board(Board board){
-    
-    printf("\n\n||");
-    for (int i = 0; i < board -> size_r; i++){printf("=");}
-    printf("||\n");
-
-    for (int y = 0; y < board -> size_c; y++){
-        printf("||");
-        for (int x = 0; x < board -> size_r; x++){
-            Square square = board -> squares[y* board -> size_r + x];
-
-            //if is flagged - means you cannot flag revealed square
-            if (square -> is_flagged) printf("%c", FLAG_CHAR);
-            //if just unrevealed 
-            else if (!square -> is_revealed) printf("%c", UNREVEALED_CHAR);
-            //if is revealed  and mine
-            else if (square -> is_mine) printf("%c", MINE_CHAR);
-            //if revealed and has no neighbour mines
-            else if (square -> number_of_neighbour_mines == 0) printf("%c", REVEALED_CLEAR_CHAR);
-            //if revealed and has any neighbour mines
-            else printf("%d", square -> number_of_neighbour_mines);
-
-        }
-        printf("||\n");
-    }
-
-    printf("||");
-    for (int i = 0; i < board -> size_r; i++){printf("=");}
-    printf("||\n\n");
-}
-// prints board as uncovered matrix
-void dev_print_board(Board board){
-    
-    printf("\n\n||");
-    for (int i = 0; i < board -> size_r; i++){printf("=");}
-    printf("||\n");
-
-    for (int y = 0; y < board -> size_c; y++){
-        printf("||");
-        for (int x = 0; x < board -> size_r; x++){
-            Square square = board -> squares[y* board -> size_r + x];
-
-            //if is flagged - means you cannot flag revealed square
-            if (square -> is_flagged) printf("%c", FLAG_CHAR);
-            //if just unrevealed 
-            //else if (!square -> is_revealed) printf("%c", UNREVEALED_CHAR);
-            //if is revealed  and mine
-            else if (square -> is_mine) printf("%c", MINE_CHAR);
-            //if revealed and has no neighbour mines
-            //else if (square -> number_of_neighbour_mines == 0) printf("%c", REVEALED_CLEAR_CHAR);
-            //if revealed and has any neighbour mines
-            else printf("%d", square -> number_of_neighbour_mines);
-
-        }
-        printf("||\n");
-    }
-
-    printf("||");
-    for (int i = 0; i < board -> size_r; i++){printf("=");}
-    printf("||\n");
-}
 //standard input for the game ("f x y" or "r x y")
 void standard_input(Board board) {
     char option;
     int row, column;
 
-	printf(">");
-   	scanf("%c %d %d", &option, &row, &column);
+	printw(">");
+   	scanw("%c %d %d", &option, &row, &column);
 
     switch(option) {
     	  case 'f':
@@ -341,7 +285,8 @@ void standard_input(Board board) {
 			reveal_square(board, row-1, column-1);
             break;
           default:
-            printf("Invalid input\n");
+            printw("Invalid input\n");
+            refresh();
             break;
     }
 }
@@ -355,12 +300,14 @@ void start_game(Board board){
     print_board(board);
 
     do {
-        printf("First click >");
-        scanf("%c %d %d", &option, &row, &column);
+        printw("First click >");
+        scanw("%c %d %d", &option, &row, &column);
+        refresh();
         if (option == 'r') {
             valid_firs_move = 1;
         } else {
-            printf("Invalid input! First move must be 'r'!\n");
+            printw("Invalid input! First move must be 'r'!\n");
+            refresh();
         }
     } while (valid_firs_move == 0);
 
@@ -394,7 +341,9 @@ void finish_game(Board board){
     }
     int score = board -> number_of_revealed_squares * difficulty_factor * 100;
 
-    printf("SCORE: %d\n", score);
+    printw("SCORE: %d\n", score);
+    refresh();
+    endwin();
     //TODO get_name
 
 }
