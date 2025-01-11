@@ -325,34 +325,51 @@ void dev_print_board(Board board){
     for (int i = 0; i < board -> size_r; i++){printf("=");}
     printf("||\n");
 }
+//standard input for the game ("f x y" or "r x y")
+void standard_input(Board board) {
+    char option;
+    int row, column;
+
+	printf(">");
+   	scanf("%c %d %d", &option, &row, &column);
+
+    switch(option) {
+    	  case 'f':
+			flag_square(board, row-1, column-1);
+            break;
+		  case 'r':
+			reveal_square(board, row-1, column-1);
+            break;
+          default:
+            printf("Invalid input\n");
+            break;
+    }
+}
 
 //starts the game
 void start_game(Board board){
-    int r;
-    int c;
+    char option;
+    int row, column;
+    int valid_firs_move = 0;
     board = create_empty_board();
     print_board(board);
 
-    printf("\nWhich row to click: ");
-    scanf("%d", &r);
-    printf("Which column to click: ");
-    scanf("%d", &c);
+    do {
+        printf("First click >");
+        scanf("%c %d %d", &option, &row, &column);
+        if (option == 'r') {
+            valid_firs_move = 1;
+        } else {
+            printf("Invalid input! First move must be 'r'!\n");
+        }
+    } while (valid_firs_move == 0);
 
     //first click
-    initialize_board(board, r-1, c-1);
-
+    initialize_board(board, row-1, column-1);
 
     while (1){
         print_board(board);
-
-        printf("\nWhich row to click: ");
-        scanf("%d", &r);
-        printf("Which column to click: ");
-        scanf("%d", &c);
-
-        //TODO: getting input
-        //flag_square(board, r-1, c-1);
-        reveal_square(board, r-1, c-1);
+        standard_input(board);
     }
 
 }
