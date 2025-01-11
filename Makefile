@@ -11,8 +11,8 @@ install_ncurses:
 CC = cc
 LDFLAGS = -lncurses
 
-bin/minesweeper: bin/game.o bin/board.o bin/user_interface.o
-	$(CC) -o bin/minesweeper bin/game.o bin/board.o bin/user_interface.o $(LDFLAGS)
+bin/minesweeper: bin/game.o bin/board.o bin/user_interface.o bin/leaderboard.o
+	$(CC) -o bin/minesweeper bin/game.o bin/board.o bin/user_interface.o bin/leaderboard.o $(LDFLAGS)
 
 bin/game.o: src/game.c
 	$(CC) -o bin/game.o -c src/game.c
@@ -22,6 +22,9 @@ bin/board.o: src/board.c
 
 bin/user_interface.o: src/user_interface.c
 	$(CC) -o bin/user_interface.o -c src/user_interface.c
+
+bin/leaderboard.o: src/leaderboard.c
+	$(CC) -o bin/leaderboard.o -c src/leaderboard.c
 
 clean:
 	rm -f bin/*

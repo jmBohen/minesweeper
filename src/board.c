@@ -1,6 +1,7 @@
 #include "board.h"
 #include "definitions.h"
 #include "user_interface.h"
+#include "leaderboard.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
@@ -346,9 +347,16 @@ void start_game(Board board){
 //calculate score and get name
 void finish_game(Board board){
     int score = calculate_score(board);
+    char name[50];
     printw("SCORE: %d\n", score);
     refresh();
-    endwin();
-    //TODO get_name
 
+    printw("Enter your name: ");
+    refresh();
+    scanw("%s", name);
+
+    save_to_leaderboard(score, name);
+    print_leaderboard();
+
+    endwin();
 }
