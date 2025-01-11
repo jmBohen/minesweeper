@@ -5,9 +5,18 @@
 #include <stdio.h>
 #include <ncurses.h>
 
+void print_scoreboard(Board board){
+    int score = 0;
+    score = calculate_score(board);
+    printw("Score: %d\n", score);
+    printw("\n");
+    refresh();
+}
+
 // prints board as covered matrix
 void print_board(Board board){
     clear();
+    print_scoreboard(board);
     printw("\n\n|");
     for (int i = 0; i < board -> size_r; i++){
       printw("=");

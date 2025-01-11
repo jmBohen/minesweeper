@@ -13,6 +13,7 @@ Board create_empty_board(){
     Board board = malloc(sizeof(*board));
     
     set_settings(board);
+    board -> number_of_revealed_squares = 0;
     board -> squares = malloc(board -> size_c * board -> size_r * sizeof(Square));
     
 
@@ -269,6 +270,27 @@ void increase_number_of_neighbour_mines_for_neighbours(Board board, int r, int c
     }
 }
 
+int calculate_score(Board board){
+    float difficulty_factor = 0;
+
+    switch (board -> difficulty){
+        case SMALL_SYMBOL:
+            difficulty_factor = 1.0;
+            break;
+        case MEDIUM_SYMBOL:
+            difficulty_factor = 1.5;
+            break;
+        case LARGE_SYMBOL:
+            difficulty_factor = 2.0;
+            break;
+        case CUSTOM_SYMBOL:
+            difficulty_factor = 1.25;
+            break;
+    }
+    int score = board -> number_of_revealed_squares * difficulty_factor * 100;
+    return score;
+}
+
 //standard input for the game ("f x y" or "r x y")
 void standard_input(Board board) {
     char option;
@@ -323,24 +345,7 @@ void start_game(Board board){
 
 //calculate score and get name
 void finish_game(Board board){
-    float difficulty_factor = 0;
-
-    switch (board -> difficulty){
-        case SMALL_SYMBOL:
-            difficulty_factor = 1.0;
-            break;
-        case MEDIUM_SYMBOL:
-            difficulty_factor = 1.5;
-            break;
-        case LARGE_SYMBOL:
-            difficulty_factor = 2.0;
-            break;
-        case CUSTOM_SYMBOL:
-            difficulty_factor = 1.25;
-            break;
-    }
-    int score = board -> number_of_revealed_squares * difficulty_factor * 100;
-
+    int score = calculate_score(board);
     printw("SCORE: %d\n", score);
     refresh();
     endwin();

@@ -39,6 +39,8 @@ void initialize_board(Board board, int r, int c);
 //checks if you won the game and unreaveld all clear squares
 int is_finished(Board board);
 
+int calculate_score(Board board);
+
 //standard input for the game ("f x y" or "r x y")
 void standard_input(Board board);
 
