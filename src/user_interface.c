@@ -17,15 +17,15 @@ void print_scoreboard(Board board){
 void print_board(Board board){
     clear();
     print_scoreboard(board);
-    printw("\n\n|");
+    printw("\n||");
     for (int i = 0; i < board -> size_r; i++){
       printw("=");
       refresh();
     }
-    printw("|\n");
+    printw("||\n");
 
     for (int y = 0; y < board -> size_c; y++){
-        printw("|");
+        printw("||");
         for (int x = 0; x < board -> size_r; x++){
             Square square = board -> squares[y* board -> size_r + x];
 
@@ -45,12 +45,12 @@ void print_board(Board board){
         printw("|\n");
     }
 
-    printw("|");
+    printw("||");
     for (int i = 0; i < board -> size_r; i++){
       printw("=");
       refresh();
     }
-    printw("|\n\n");
+    printw("||\n\n");
     refresh();
 }
 
@@ -58,7 +58,10 @@ void print_board(Board board){
 void dev_print_board(Board board){
     clear();
     printw("\n\n||");
-    for (int i = 0; i < board -> size_r; i++){printw("=");}
+    for (int i = 0; i < board -> size_r; i++){
+      printw("=");
+      refresh();
+    }
     printw("||\n");
 
     for (int y = 0; y < board -> size_c; y++){
@@ -75,7 +78,7 @@ void dev_print_board(Board board){
             //if revealed and has no neighbour mines
             //else if (square -> number_of_neighbour_mines == 0) printw("%c", REVEALED_CLEAR_CHAR);
             //if revealed and has any neighbour mines
-            else printw("[%d]", square -> number_of_neighbour_mines);
+            else printw("%d", square -> number_of_neighbour_mines);
 
             refresh();
         }
@@ -83,7 +86,10 @@ void dev_print_board(Board board){
     }
 
     printw("||");
-    for (int i = 0; i < board -> size_r; i++){printw("=");}
+    for (int i = 0; i < board -> size_r; i++){
+      printw("=");
+      refresh();
+    }
     printw("||\n");
     refresh();
 }

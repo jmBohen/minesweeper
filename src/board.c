@@ -7,6 +7,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <ncurses.h>
+#include <string.h>
 
 
 //creating empty board ready for first click; includes set settings
@@ -359,4 +360,96 @@ void finish_game(Board board){
     print_leaderboard();
 
     endwin();
+}
+
+void game_from_file(Board board, char *filepath) {
+    FILE *file = fopen(filepath, "r");
+    if (file == NULL) {
+        printw("Error: Could not open file %s\n", filepath);
+        refresh();
+        exit(EXIT_FAILURE);
+    }
+
+    char line[256];
+    int row_count = 0;
+    int col_count = 0;
+    int mines = 0;
+
+    // Read the first line to determine the number of columns
+    if (fgets(line, sizeof(line), file)) {
+        for (char *p = line; *p != '\0'; p++) {
+            if (*p == '=') {
+                col_count++;
+            }
+        }
+    }
+
+    // Count the number of lines starting with "||" to determine the number of rows
+    while (fgets(line, sizeof(line), file)) {
+        if ((strncmp(line, "||", 2) == 0) && (line[2] != '=')) {
+            row_count++;
+        }
+    }
+
+    // Allocate memory for the board
+    board->size_r = col_count;
+    board->size_c = row_count;
+    board->squares = malloc(row_count * col_count * sizeof(Square));
+    for (int i = 0; i < row_count * col_count; i++) {
+        board -> squares[i] = malloc(sizeof(Square));
+        board -> squares[i] -> is_revealed = 0;
+        board -> squares[i] -> is_mine = 0;
+        board -> squares[i] -> is_flagged = 0;
+        board -> squares[i] -> number_of_neighbour_mines = 0;
+    }
+
+    // Reset file pointer to the beginning
+    rewind(file);
+
+    int row = 0;
+    while (fgets(line, sizeof(line), file)) {
+        // Parse the file to initialize the board
+        if ((strncmp(line, "||", 2) == 0) && (line[2] != '=')) {
+            for (int col = 0; col < col_count; col++) {
+                char c = line[col + 2];
+                if (c == '*') {
+                    board -> squares[row * col_count + col] -> is_mine = 1;
+                    mines++;
+                }  else if (isdigit(c)) {
+                    board -> squares[row * col_count + col] -> number_of_neighbour_mines = c - '0';
+                }
+            }
+            row++;
+        }
+
+        board -> number_of_mines = mines;
+        board -> time_in_minutes = 0;
+        board -> number_of_revealed_squares = 0;
+        board -> difficulty = 'C';
+
+        //Execute moves in the file
+        if ((strncmp(line, "r", 1) == 0) || (strncmp(line, "f", 1) == 0)) {
+            char option;
+            int row, column;
+            sscanf(line, "%c %d %d", &option, &row, &column);
+            switch(option) {
+                case 'f':
+                    flag_square(board, row-1, column-1);
+                    break;
+                case 'r':
+                    reveal_square(board, row-1, column-1);
+                    break;
+                default:
+                    printw("Invalid input\n");
+                    refresh();
+                    break;
+            }
+        }
+    }
+    fclose(file);
+
+    while (1){
+        print_board(board);
+        standard_input(board);
+    }
 }

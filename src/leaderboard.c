@@ -4,7 +4,7 @@
 #include <ncurses.h>
 
 void save_to_leaderboard(int score, char *name){
-    FILE *file = fopen("leaderboard.txt", "a+");
+    FILE *file = fopen("bin/leaderboard.txt", "a+");
     if (file == NULL){
         printw("Error opening file!\n");
         refresh();
@@ -55,7 +55,7 @@ void save_to_leaderboard(int score, char *name){
 }
 
 void print_leaderboard(){
-    FILE *file = fopen("leaderboard.txt", "r");
+    FILE *file = fopen("bin/leaderboard.txt", "r");
     if (file == NULL){
         printw("Error opening file!\n");
         refresh();
