@@ -14,8 +14,8 @@ void save_to_leaderboard(int score, char *name){
 
 
     // Read existing scores
-    int scores[5] = {0};
-    char names[5][50] = {0};
+    int scores[6] = {0};
+    char names[6][50] = {0};
     int count = 0;
     while (fscanf(file, "%s %d", names[count], &scores[count]) != EOF && count < 5) {
         count++;
@@ -35,15 +35,15 @@ void save_to_leaderboard(int score, char *name){
                 scores[i] = scores[j];
                 scores[j] = temp_score;
                 char temp_name[50];
-                strcpy(temp_name, names[i]);
-                strcpy(names[i], names[j]);
-                strcpy(names[j], temp_name);
+                strncpy(temp_name, names[i], 50);
+                strncpy(names[i], names[j], 50);
+                strncpy(names[j], temp_name, 50);
             }
         }
     }
 
     // Save top 5 scores
-    file = fopen("leaderboard.txt", "w");
+    file = fopen("bin/leaderboard.txt", "w");
     if (file == NULL){
         printf("Error opening file!\n");
         exit(1);
@@ -70,12 +70,11 @@ void print_leaderboard(){
     }
     fclose(file);
 
+    clear();
     printw("Leaderboard:\n");
     refresh();
     for (int i = 0; i < count; i++) {
         printw("%d. %s %d\n", i + 1, names[i], scores[i]);
         refresh();
     }
-
-    getch();
 }

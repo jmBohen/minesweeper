@@ -17,7 +17,9 @@ Board create_empty_board(){
     set_settings(board);
     board -> number_of_revealed_squares = 0;
     board -> squares = malloc(board -> size_c * board -> size_r * sizeof(Square));
-    
+
+    //Start a game timer
+    board -> start_time = time(0);
 
     for (int i = 0; i < board -> size_c * board -> size_r; i++){
         board -> squares[i] = malloc(sizeof(Square));
@@ -164,11 +166,32 @@ void set_settings(Board board) {
     }
 }
 
+void check_if_game_over (Board board, int row, int column) {
+    //if mine then game over
+    if (board -> squares[row * board -> size_r + column] -> is_mine){
+        clear();
+        print_board(board);
+        printw("\nGAME OVER\n");
+        refresh();
+        finish_game(board);
+        exit(EXIT_SUCCESS);
+    }
 
+    if(is_finished(board)){
+        clear();
+        print_board(board);
+        printw("YOU WON!\n");
+        refresh();
+        finish_game(board);
+        exit(EXIT_SUCCESS);
+    }
+}
 
 //on square click
 void reveal_square(Board board, int r, int c){
-    
+
+    //if out of bounds abort
+    if ((r < 0 || r >= board -> size_c) || (c < 0 || c >= board -> size_r)) return;
     //if already revealed abort
     if (board -> squares[r * board -> size_r + c] -> is_revealed) return;
     //do not reveal if square is flagged
@@ -178,25 +201,8 @@ void reveal_square(Board board, int r, int c){
     board -> squares[r * board -> size_r + c] -> is_revealed = 1;
     board -> number_of_revealed_squares++;
 
-    //if mine then game over
-    if (board -> squares[r * board -> size_r + c] -> is_mine){
-        print_board(board);
-        printw("\nGAME OVER\n");
-        refresh();
-        finish_game(board);
-        exit(EXIT_SUCCESS);
-    }
-
-    if(is_finished(board)){
-        print_board(board);
-        printw("YOU WON!\n");
-        refresh();
-        finish_game(board);
-        exit(EXIT_SUCCESS);
-    }
-
     //if doesnt have neighbouring mines - reveal neighbour squares
-    if (!(board -> squares[r * board -> size_r + c] -> number_of_neighbour_mines)){
+    if (!(board -> squares[r * board -> size_r + c] -> number_of_neighbour_mines) || board -> squares[r * board -> size_r + c] -> is_mine){
         int **neighbours = get_neighbours(board, r, c);
         for (int i = 0; neighbours[i][0] != EOF; i++){
             reveal_square(board, neighbours[i][0], neighbours[i][1]);
@@ -206,6 +212,9 @@ void reveal_square(Board board, int r, int c){
 
 
 void flag_square(Board board, int r, int c){
+    //if out of bounds abort
+    if ((r < 0 || r >= board -> size_c) || (c < 0 || c >= board -> size_r)) return;
+
     if (board -> squares[r * board -> size_r + c] -> is_flagged){
         board -> squares[r * board -> size_r + c] -> is_flagged = 0;
     } else {
@@ -233,10 +242,6 @@ int is_finished(Board board){
 
 //sets up board after first click
 void initialize_board(Board board, int r, int c){
-
-    //Start a game timer
-    board -> start_time = time(0);
-
     //randomly selecting mines coordinates 
     //avoiding:
     //- first clicked square and its neighbours
@@ -319,6 +324,7 @@ void standard_input(Board board) {
             break;
 		  case 'r':
 			reveal_square(board, row-1, column-1);
+		    check_if_game_over(board, row-1, column-1);
             break;
           default:
             printw("Invalid input\n");
@@ -333,6 +339,9 @@ void start_game(Board board){
     int row, column;
     int valid_firs_move = 0;
     board = create_empty_board();
+    clear();
+    print_scoreboard(board);
+    print_time(board);
     print_board(board);
 
     do {
@@ -351,6 +360,9 @@ void start_game(Board board){
     initialize_board(board, row-1, column-1);
 
     while (1){
+        clear();
+        print_scoreboard(board);
+        print_time(board);
         print_board(board);
         standard_input(board);
     }
@@ -370,6 +382,7 @@ void finish_game(Board board){
 
     save_to_leaderboard(score, name);
     print_leaderboard();
+    getch();
 
     endwin();
 }
@@ -385,7 +398,6 @@ void game_from_file(Board board, char *filepath) {
     char line[256];
     int row_count = 0;
     int col_count = 0;
-    int mines = 0;
 
     // Read the first line to determine the number of columns
     if (fgets(line, sizeof(line), file)) {
@@ -404,10 +416,19 @@ void game_from_file(Board board, char *filepath) {
     }
 
     // Allocate memory for the board
+    board = malloc(sizeof(*board));
+
+    // Set the board settings
+    board -> number_of_mines = 0;
+    board -> time_in_minutes = 99;
+    board -> number_of_revealed_squares = 0;
+    board -> difficulty = 'C';
+
+    // Allocate memory for the squares
     board->size_r = col_count;
     board->size_c = row_count;
     board->squares = malloc(row_count * col_count * sizeof(Square));
-    for (int i = 0; i < row_count * col_count; i++) {
+    for (int i = 0; i < board -> size_c * board -> size_r; i++) {
         board -> squares[i] = malloc(sizeof(Square));
         board -> squares[i] -> is_revealed = 0;
         board -> squares[i] -> is_mine = 0;
@@ -418,6 +439,7 @@ void game_from_file(Board board, char *filepath) {
     // Reset file pointer to the beginning
     rewind(file);
 
+    int total_moves = 0;
     int row = 0;
     while (fgets(line, sizeof(line), file)) {
         // Parse the file to initialize the board
@@ -426,18 +448,13 @@ void game_from_file(Board board, char *filepath) {
                 char c = line[col + 2];
                 if (c == '*') {
                     board -> squares[row * col_count + col] -> is_mine = 1;
-                    mines++;
+                    board -> number_of_mines++;
                 }  else if (isdigit(c)) {
                     board -> squares[row * col_count + col] -> number_of_neighbour_mines = c - '0';
                 }
             }
             row++;
         }
-
-        board -> number_of_mines = mines;
-        board -> time_in_minutes = 0;
-        board -> number_of_revealed_squares = 0;
-        board -> difficulty = 'C';
 
         //Execute moves in the file
         if ((strncmp(line, "r", 1) == 0) || (strncmp(line, "f", 1) == 0)) {
@@ -447,9 +464,11 @@ void game_from_file(Board board, char *filepath) {
             switch(option) {
                 case 'f':
                     flag_square(board, row-1, column-1);
+                    total_moves++;
                     break;
                 case 'r':
                     reveal_square(board, row-1, column-1);
+                    total_moves++;
                     break;
                 default:
                     printw("Invalid input\n");
@@ -460,8 +479,15 @@ void game_from_file(Board board, char *filepath) {
     }
     fclose(file);
 
-    while (1){
-        print_board(board);
-        standard_input(board);
-    }
+    clear();
+    printw("Game loaded from file %s\n", filepath);
+    printw("Game ended in the state below:\n\n");
+    printw("Total moves: %d\n", total_moves);
+    print_scoreboard(board);
+    print_board(board);
+    printw("Press enter to continue\n");
+    refresh();
+
+    // Wait for enter key
+    while (getch() != '\n');
 }

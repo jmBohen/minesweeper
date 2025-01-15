@@ -8,28 +8,32 @@
 
 void print_scoreboard(Board board){
     int score = 0;
+
+    score = calculate_score(board);
+    printw("Score: %d\n", score);
+    refresh();
+}
+
+void print_time(Board board){
     int current_time, time_left;
 
     current_time = time(0);
     time_left = board -> time_in_minutes - (current_time - board -> start_time) / 60;
 
-    score = calculate_score(board);
-    printw("Score: %d\n", score);
     printw("Time left: %d minutes\n", time_left);
-    printw("\n");
     refresh();
 }
 
 // prints board as covered matrix
 void print_board(Board board){
-    clear();
-    print_scoreboard(board);
-    printw("\n||");
+    char line[board -> size_r];
     for (int i = 0; i < board -> size_r; i++){
-      printw("=");
-      refresh();
+        line[i] = '=';
     }
-    printw("||\n");
+    line[board->size_r] = '\0';
+
+    printw("\n||%s||\n", line);
+    refresh();
 
     for (int y = 0; y < board -> size_c; y++){
         printw("||");
@@ -52,12 +56,7 @@ void print_board(Board board){
         printw("||\n");
     }
 
-    printw("||");
-    for (int i = 0; i < board -> size_r; i++){
-      printw("=");
-      refresh();
-    }
-    printw("||\n\n");
+    printw("||%s||\n", line);
     refresh();
 }
 
