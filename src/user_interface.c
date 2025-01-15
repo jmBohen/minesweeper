@@ -4,11 +4,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ncurses.h>
+#include <time.h>
 
 void print_scoreboard(Board board){
     int score = 0;
+    int current_time, time_left;
+
+    current_time = time(0);
+    time_left = board -> time_in_minutes - (current_time - board -> start_time) / 60;
+
     score = calculate_score(board);
     printw("Score: %d\n", score);
+    printw("Time left: %d minutes\n", time_left);
     printw("\n");
     refresh();
 }
@@ -42,7 +49,7 @@ void print_board(Board board){
 
             refresh();
         }
-        printw("|\n");
+        printw("||\n");
     }
 
     printw("||");

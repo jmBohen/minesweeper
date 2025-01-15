@@ -15,6 +15,7 @@ typedef struct {
     int size_c;
     int number_of_mines;
     int time_in_minutes;
+    int start_time;
     Square *squares;
     int number_of_revealed_squares;
     char difficulty;

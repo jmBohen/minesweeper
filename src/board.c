@@ -216,6 +216,15 @@ void flag_square(Board board, int r, int c){
 
 
 int is_finished(Board board){
+    int current_time, time_left;
+
+    //game over if time is up
+    current_time = time(0);
+    time_left = (board -> time_in_minutes * 60) - (current_time - board -> start_time);
+    if (time_left <= 0){
+        return 0;
+    }
+
     for (int i = 0; i < board -> size_c * board -> size_r; i++){
         if( !(board -> squares[i] -> is_revealed) && !(board -> squares[i] -> is_mine)) return 0;
     }
@@ -224,7 +233,10 @@ int is_finished(Board board){
 
 //sets up board after first click
 void initialize_board(Board board, int r, int c){
-    
+
+    //Start a game timer
+    board -> start_time = time(0);
+
     //randomly selecting mines coordinates 
     //avoiding:
     //- first clicked square and its neighbours
