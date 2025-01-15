@@ -49,7 +49,20 @@ void print_board(Board board){
             //if revealed and has no neighbour mines
             else if (square -> number_of_neighbour_mines == 0) printw(" ");
             //if revealed and has any neighbour mines
-            else printw("%d", square -> number_of_neighbour_mines);
+            else {
+              init_pair(1, COLOR_BLUE, COLOR_BLACK);
+              init_pair(2, COLOR_CYAN, COLOR_BLACK);
+              init_pair(3, COLOR_GREEN, COLOR_BLACK);
+              init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+              init_pair(5, COLOR_MAGENTA, COLOR_BLACK);
+              init_pair(6, COLOR_RED, COLOR_BLACK);
+              init_pair(7, COLOR_RED, COLOR_BLACK);
+              init_pair(8, COLOR_RED, COLOR_BLACK);
+
+              attron(COLOR_PAIR(square -> number_of_neighbour_mines));
+              printw("%d", square -> number_of_neighbour_mines);
+              attroff(COLOR_PAIR(square -> number_of_neighbour_mines));
+            }
 
             refresh();
         }

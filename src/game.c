@@ -8,6 +8,7 @@ int main(int argc, char *argv[]){
     //ncurses initialization
     initscr();
     cbreak();
+    start_color();
 
     int opt;
     char *filepath = NULL;
