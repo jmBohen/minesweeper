@@ -297,16 +297,16 @@ int calculate_score(Board board){
             difficulty_factor = 1.0;
             break;
         case MEDIUM_SYMBOL:
-            difficulty_factor = 1.5;
+            difficulty_factor = 2.0;
             break;
         case LARGE_SYMBOL:
-            difficulty_factor = 2.0;
+            difficulty_factor = 3.0;
             break;
         case CUSTOM_SYMBOL:
             difficulty_factor = 1.25;
             break;
     }
-    int score = board -> number_of_revealed_squares * difficulty_factor * 100;
+    int score = board -> number_of_revealed_squares * difficulty_factor;
     return score;
 }
 
