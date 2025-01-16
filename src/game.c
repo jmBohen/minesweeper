@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <getopt.h>
 #include "board.h"
 #include "ncurses.h"
 
@@ -17,7 +18,7 @@ int main(int argc, char *argv[]){
     while ((opt = getopt(argc, argv, "f:t")) != -1) {
         switch (opt) {
             case 'f':
-                filepath = opt;
+                filepath = optarg;
                 break;
             case 't':
               	start_game_tui(game);

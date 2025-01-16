@@ -169,7 +169,6 @@ void check_if_game_over (Board board, int row, int column) {
     //if mine then game over
     if (board -> squares[row * board -> size_r + column] -> is_mine && !(board -> squares[row * board -> size_r + column] -> is_flagged)){
         clear();
-        print_board(board);
         printw("\nGAME OVER\n");
         refresh();
         finish_game(board);
@@ -178,7 +177,6 @@ void check_if_game_over (Board board, int row, int column) {
 
     if(is_finished(board)){
         clear();
-        print_board(board);
         printw("YOU WON!\n");
         refresh();
         finish_game(board);
