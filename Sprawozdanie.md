@@ -1,66 +1,66 @@
-# Minesweeper Game Report
+# Raport z gry Saper
 
-## User Manual
+## Instrukcja obsługi
 
-### Game Ruless
-Minesweeper is a game where the player uncovers squares on a board without hitting any mines. Each uncovered square shows the number of mines in the adjacent squares (0 to 8). The player can flag squares to mark potential mines, preventing accidental uncovering.
+### Zasady gry
+Saper to gra, w której gracz odkrywa pola na planszy, unikając trafienia na miny. Każde odkryte pole pokazuje liczbę min na sąsiednich polach (od 0 do 8). Gracz może oznaczać pola flagami, aby zaznaczyć potencjalne miny.
 
-### How to Run the Program
-1. **Build the Program**: Run `make` in the terminal to compile the program.
-2. **Start the Game**: Execute `bin/minesweeper` to start the game.
-3. **Choose Difficulty**: The program will prompt you to select a difficulty level:
-   - Easy: 9x9 board with 10 mines
-   - Medium: 16x16 board with 40 mines
-   - Hard: 16x30 board with 99 mines
-   - Custom: Define your own board sizse and number of mines
-4. **Play the Game**: Use the following commands:
-   - `f x y`: Flag/unflag the square at row `x` and column `y`
-   - `r x y`: Reveal the square at row `x` and column `y`
-5. **End of Game**: The game ends when all non-mine squares are revealed or a mine is uncovered. Enter your name to save your score.
+### Jak uruchomić program
+1. **Zbuduj program**: Uruchom `make` w terminalu.
+2. **Uruchom grę**: Wykonaj `bin/minesweeper`.
+3. **Wybierz poziom trudności**:
+   - Łatwy: 9x9, 10 min
+   - Średni: 16x16, 40 min
+   - Trudny: 16x30, 99 min
+   - Własny: Zdefiniuj rozmiar planszy i liczbę min
+4. **Graj w grę**:
+   - `f x y`: Oznacz/odznacz flagą pole (wiersz `x`, kolumna `y`)
+   - `r x y`: Odkryj pole (wiersz `x`, kolumna `y`)
+5. **Koniec gry**: Gra kończy się po odkryciu wszystkich pól bez min lub miny. Wprowadź swoje imię, aby zapisać wynik.
 
-### Running in File Mode
-1. **Run the Program with File Input**: Execute `bin/minesweeper -f <file_path>` to load a board and moves from a file.
-2. **File Format**: The file should contain the board layout and moves in the same format as terminal commands.
-3. **Output**: The program will display the number of correct moves, the score, and whether the game was won or lost.
+### Uruchamianie w trybie plikowym
+1. **Uruchom**: `bin/minesweeper -f <ścieżka_do_pliku>`.
+2. **Format pliku**: Układ planszy i ruchy w formacie komend terminalowych.
+3. **Wyjście**: Liczba poprawnych ruchów, wynik i informacja o wygranej/przegranej.
 
-## Implementation Details
+## Szczegóły implementacji
 
-### Module Breakdown
-- **board.c**: Handles board creation, settings, and game logic.
-- **leaderboard.c**: Manages saving and displaying the leaderboard.
-- **user_interface.c**: Manages user input and output.
-- **game.c**: Main game loop and initialization.
+### Moduły
+- **board.c**: Plansza, ustawienia, logika gry.
+- **leaderboard.c**: Tabela wyników.
+- **user_interface.c**: Wejście/wyjście użytkownika.
+- **game.c**: Główna pętla gry i inicjalizacja.
 
-### Key Functions
-- **create_empty_board**: Initializes an empty board.
-- **set_settings**: Sets the game settings based on user input.
-- **initialize_board**: Sets up the board with mines after the first click.
-- **reveal_square**: Reveals a square and its neighbors if there are no adjacent mines.
-- **flag_square**: Flags or unflags a square.
-- **check_if_game_over**: Checks if the game is over and handles the end game logic.
-- **save_to_leaderboard**: Saves the player's score to the leaderboard.
-- **print_leaderboard**: Displays the top 5 scores.
+### Funkcje
+- **create_empty_board**: Inicjalizacja pustej planszy.
+- **set_settings**: Ustawienia gry.
+- **initialize_board**: Ustawia miny po pierwszym kliknięciu.
+- **reveal_square**: Odkrywa pole i sąsiadów.
+- **flag_square**: Oznacza/odznacza flagą.
+- **check_if_game_over**: Sprawdza koniec gry.
+- **save_to_leaderboard**: Zapisuje wynik.
+- **print_leaderboard**: Wyświetla 5 najlepszych wyników.
 
-### Important Structures
-- **Board**: Represents the game board, including size, number of mines, and squares.
-- **Square**: Represents a single square on the board, including its state (revealed, flagged, mine) and the number of neighboring mines.
+### Struktury
+- **Board**: Plansza, rozmiar, liczba min, pola.
+- **Square**: Pole, stan (odkryte, oflagowane, mina), liczba sąsiednich min.
 
-### Tests
-- **test_board.c**: Tests board creation and game logic.
-- **test_game.c**: Tests the main game loop and initialization.
-- **test_leaderboard.c**: Tests saving and displaying the leaderboard.
-- **test_user_interface.c**: Tests user input and output.
+### Testy
+- **test_board.c**: Plansza i logika gry.
+- **test_game.c**: Główna pętla i inicjalizacja.
+- **test_leaderboard.c**: Tabela wyników.
+- **test_user_interface.c**: Wejście/wyjście.
 
 ### Makefile
-- **install_ncurses**: Checks and installs the ncurses library.
-- **Compilation**: Compiles the source files into object files and links them to create the executable.
-- **Clean**: Removes the compiled object files.
+- **install_ncurses**:  Instaluje bibliotekę ncurses.
+- **Kompilacja**: Kompiluje i linkuje pliki.
+- **Clean**: Usuwa pliki obiektowe.
 
-## Work Distribution
-- **Team Member 1**: Implemented board creation, game logic, and file input handling.
-- **Team Member 2**: Implemented user interface, leaderboard management, and testing.
+## Podział pracy
+- **Członek 1**: Plansza, logika, wejście plikowe.
+- **Członek 2**: Interfejs, tabela wyników, testy.
 
-## Summary
-- **Implemented Features**: All required features were implemented, including different difficulty levels, file input mode, and leaderboard.
-- **Challenges**: Handling user input and ensuring the first move is always safe were challenging. These were resolved by careful input validation and board initialization logic.
-- **Conclusion**: The project was successfully completed with all functionalities working as expected. The game is enjoyable and provides a good challenge for players.
+## Podsumowanie
+- **Funkcje**: Poziomy trudności, tryb plikowy, tabela wyników.
+- **Wyzwania**: Obsługa wejścia, bezpieczeństwo pierwszego ruchu.
+- **Wnioski**: Projekt ukończony, funkcjonalności działają.
