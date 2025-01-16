@@ -13,12 +13,55 @@ void save_to_leaderboard(int score, char *name){
     rewind(file);
 
 
-    // Read existing scores
-    int scores[6] = {0};
-    char names[6][50] = {0};
+    // Allocate memory for the initial capacity of 6 scores
+    int initial_capacity = 6;
+    int *scores = malloc(initial_capacity * sizeof(int));
+    char **names = malloc(initial_capacity * sizeof(char*));
+
+    if (scores == NULL || names == NULL) {
+        perror("Failed to allocate memory");
+        fclose(file);
+        return;
+    }
+
+    // Allocate memory for the names
+    for (int i = 0; i < initial_capacity; i++) {
+        names[i] = malloc(50 * sizeof(char));
+        if (names[i] == NULL) {
+            perror("Failed to allocate memory for names");
+            fclose(file);
+            return;
+        }
+    }
+
     int count = 0;
-    while (fscanf(file, "%s %d", names[count], &scores[count]) != EOF && count < 5) {
+    int capacity = initial_capacity;
+    while (fscanf(file, "%s %d", names[count], &scores[count]) != EOF) {
         count++;
+
+        // If the memory isn't enough, reallocate it
+        if (count >= capacity) {
+            capacity *= 2;
+            scores = realloc(scores, capacity * sizeof(int));
+            names = realloc(names, capacity * sizeof(char*));
+
+            if (scores == NULL || names == NULL) {
+                perror("Failed to reallocate memory");
+                fclose(file);
+                return;
+            }
+
+            // Allocate memory for the second half of the names
+            for (int i = capacity / 2; i < capacity; i++) {
+                names[i] = malloc(50 * sizeof(char));
+
+                if (names[i] == NULL) {
+                    perror("Failed to allocate memory for names");
+                    fclose(file);
+                    return;
+                }
+            }
+        }
     }
     fclose(file);
 
@@ -42,16 +85,19 @@ void save_to_leaderboard(int score, char *name){
         }
     }
 
-    // Save top 5 scores
+
     file = fopen("bin/leaderboard.txt", "w");
     if (file == NULL){
         printf("Error opening file!\n");
         exit(1);
     }
-    for (int i = 0; i < 5 && i < count; i++) {
+
+    for (int i = 0; i < count; i++) {
         fprintf(file, "%s %d\n", names[i], scores[i]);
     }
     fclose(file);
+    free(names);
+    free(scores);
 }
 
 void print_leaderboard(){
