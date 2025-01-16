@@ -168,7 +168,7 @@ void set_settings(Board board) {
 
 void check_if_game_over (Board board, int row, int column) {
     //if mine then game over
-    if (board -> squares[row * board -> size_r + column] -> is_mine){
+    if (board -> squares[row * board -> size_r + column] -> is_mine && !(board -> squares[row * board -> size_r + column] -> is_flagged)){
         clear();
         print_board(board);
         printw("\nGAME OVER\n");
@@ -447,6 +447,14 @@ void start_game_tui(Board board) {
 void finish_game(Board board){
     int score = calculate_score(board);
     char name[50];
+    for (int i = 0; i < board -> size_c * board -> size_r; i++) {
+        if (board -> squares[i] -> is_mine && board -> squares[i] -> is_flagged == 0) {
+            board -> squares[i] -> is_revealed = 1;
+        }
+    }
+    
+    print_board(board);
+    refresh();
     printw("SCORE: %d\n", score);
     refresh();
 
