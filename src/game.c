@@ -14,9 +14,18 @@ int main(int argc, char *argv[]){
     char *filepath = NULL;
     Board game;
 
-    while ((opt = getopt(argc, argv, "f:")) != -1) {
-        if (opt == 'f') {
-            filepath = optarg;
+    while ((opt = getopt(argc, argv, "f:t")) != -1) {
+        switch (opt) {
+            case 'f':
+                filepath = optarg;
+                break;
+            case 't':
+              	start_game_tui(game);
+                endwin();
+                return 0;
+            default:
+                fprintf(stderr, "Usage: %s [-f filepath] [-t]\n", argv[0]);
+                exit(EXIT_FAILURE);
         }
     }
 

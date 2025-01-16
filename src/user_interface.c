@@ -24,26 +24,11 @@ void print_time(Board board){
     refresh();
 }
 
-// prints board as covered matrix
-void print_board(Board board){
-    char line[board -> size_r];
-    for (int i = 0; i < board -> size_r; i++){
-        line[i] = '=';
-    }
-    line[board->size_r] = '\0';
 
-    printw("\n||%s||\n", line);
-    refresh();
-
-    for (int y = 0; y < board -> size_c; y++){
-        printw("||");
-        for (int x = 0; x < board -> size_r; x++){
-            Square square = board -> squares[y* board -> size_r + x];
-
-            //if is flagged - means you cannot flag revealed square
-            if (square -> is_flagged) printw("F");
+void draw_square(Square square) {
+	if (square -> is_flagged) printw("F");
             //if just unrevealed
-            else if (!square -> is_revealed) addch(ACS_CKBOARD);
+            else if (!square -> is_revealed) addch('#');
             //if is revealed  and mine
             else if (square -> is_mine) addch('*');
             //if revealed and has no neighbour mines
@@ -63,6 +48,25 @@ void print_board(Board board){
               printw("%d", square -> number_of_neighbour_mines);
               attroff(COLOR_PAIR(square -> number_of_neighbour_mines));
             }
+}
+
+// prints board as covered matrix
+void print_board(Board board){
+    char line[board -> size_r];
+    for (int i = 0; i < board -> size_r; i++){
+        line[i] = '=';
+    }
+    line[board->size_r] = '\0';
+
+    printw("\n||%s||\n", line);
+    refresh();
+
+    for (int y = 0; y < board -> size_c; y++){
+        printw("||");
+        for (int x = 0; x < board -> size_r; x++){
+            Square square = board -> squares[y* board -> size_r + x];
+
+            draw_square(square);
 
             refresh();
         }
@@ -70,6 +74,40 @@ void print_board(Board board){
     }
 
     printw("||%s||\n", line);
+    refresh();
+}
+
+
+// print board with active field
+void print_board_tui(Board board, int row, int column) {
+	char line[board -> size_r + 1];
+    for (int i = 0; i < board -> size_r; i++){
+        line[i] = '=';
+    }
+    line[board->size_r] = '\0';
+
+    printw("\n||%s||\n", line);
+    refresh();
+    for (int y = 0; y < board -> size_c; y++){
+        printw("||");
+        for (int x = 0; x < board -> size_r; x++){
+            Square square = board -> squares[y* board -> size_r + x];
+
+			if (y == row && x == column) {
+				attron(A_REVERSE);
+				draw_square(square);
+				attroff(A_REVERSE);
+			} else {
+				draw_square(square);
+			}
+
+            refresh();
+        }
+        printw("||\n");
+    }
+
+    printw("||%s||\n", line);
+    printw("\n Press 'r' to reveal square, 'f' to flag square\n");
     refresh();
 }
 

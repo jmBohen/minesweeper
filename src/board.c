@@ -126,12 +126,12 @@ void set_settings(Board board) {
                         refresh();
                         continue;
                     }
-                    if (number >= MINIMUM_SIZE && number <= MAXIMUM_SIZE_R) {
+                    if (number < MINIMUM_SIZE || number > MAXIMUM_SIZE_R) {
                         printw("Number %d is out of range.\n", number);
                         refresh();
                         continue;
                     }
-                    board->size_r = number;
+                    board->size_c = number;
                     break;
                 }
 
@@ -149,7 +149,7 @@ void set_settings(Board board) {
                         refresh();
                         continue;
                     }
-                    board->size_c = number;
+                    board->size_r = number;
                     break;
                 }
 
@@ -333,6 +333,65 @@ void standard_input(Board board) {
     }
 }
 
+// arrow control of the game
+void tui_input(Board board, int *row, int *column, int *isInitialized) {
+  	keypad(stdscr, TRUE);
+	noecho();
+	int ch = getch();
+	keypad(stdscr, FALSE);
+    echo();
+
+    switch(ch) {
+        case KEY_UP:
+          	if (*row == 0) {
+                *row = board -> size_c - 1;
+            } else {
+            	(*row)--;
+            }
+            break;
+        case KEY_DOWN:
+          	if (*row == board -> size_c - 1) {
+                *row = 0;
+            } else {
+            	(*row)++;
+            }
+            break;
+        case KEY_LEFT:
+          	if (*column == 0) {
+                *column = board -> size_r - 1;
+            } else {
+            	(*column)--;
+            }
+            break;
+        case KEY_RIGHT:
+            if (*column == board -> size_r) {
+                *column = 0;
+            } else {
+            	(*column)++;
+            }
+            break;
+        case 'f':
+          	if (!*isInitialized) {
+                printw("First move must be 'reveal'\n");
+                refresh();
+                break;
+            }
+            flag_square(board, *row, *column);
+            break;
+        case 'r':
+            if (!*isInitialized) {
+                initialize_board(board, *row, *column);
+                *isInitialized = 1;
+            } else {
+                reveal_square(board, *row, *column);
+            	check_if_game_over(board, *row, *column);
+            }
+            break;
+        default:
+            break;
+    }
+}
+
 //starts the game
 void start_game(Board board){
     char option;
@@ -367,6 +426,21 @@ void start_game(Board board){
         standard_input(board);
     }
 
+}
+
+// starts the game in terminal user interface mode
+void start_game_tui(Board board) {
+    int row = 0, column = 0;
+    int isInitialized = 0;
+    board = create_empty_board();
+
+    while (1){
+    	clear();
+    	print_scoreboard(board);
+    	print_time(board);
+    	print_board_tui(board, row, column);
+        tui_input(board, &row, &column, &isInitialized);
+    }
 }
 
 //calculate score and get name

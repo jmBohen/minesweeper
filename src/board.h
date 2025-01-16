@@ -47,6 +47,9 @@ void standard_input(Board board);
 //starts the game
 void start_game(Board board);
 
+// starts the game in terminal user interface mode
+void start_game_tui(Board board);
+
 // function pvoid increase_number_of_neighbour_mines_for_neighbours(Board board, int r, int c)rototypes
 void increase_number_of_neighbour_mines_for_neighbours(Board board, int r, int c);
 

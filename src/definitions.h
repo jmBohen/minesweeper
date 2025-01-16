@@ -39,9 +39,9 @@
 
 
 //basic queries used to ask user for input
-#define SETTINGS_QUERY "Please choose the dificulty of your game:\n'e' - easy (9x9)\n'm' - medium (16x16)\n'd' - diffiuclt (30x16)\n'c' - custom\n-> "
-#define CUSTOM_SETTINGS_QUERY_R "Enter number of rows (5 - 24): "
-#define CUSTOM_SETTINGS_QUERY_C "Enter number of columns (5 - 30): "
+#define SETTINGS_QUERY "\nPlease choose the dificulty of your game:\n'e' - easy (9x9)\n'm' - medium (16x16)\n'd' - diffiuclt (30x16)\n'c' - custom\n-> "
+#define CUSTOM_SETTINGS_QUERY_R "\nEnter number of rows (5 - 24): "
+#define CUSTOM_SETTINGS_QUERY_C "\nEnter number of columns (5 - 30): "
 
 //chars for board printing
 #define UNREVEALED_CHAR (char)'#'

@@ -12,6 +12,9 @@ void print_time(Board board);
 // prints board as matrix
 void print_board(Board board);
 
+// print board with active field
+void print_board_tui(Board board, int row, int column);
+
 // prints game from file summary
 void print_game_from_file_summary(Board board, int total_moves);
 
