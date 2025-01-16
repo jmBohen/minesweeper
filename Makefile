@@ -13,7 +13,6 @@ LDFLAGS = -lncurses
 
 bin/minesweeper: bin/game.o bin/board.o bin/user_interface.o bin/leaderboard.o
 	$(CC) -o bin/minesweeper bin/game.o bin/board.o bin/user_interface.o bin/leaderboard.o $(LDFLAGS)
-	
 
 bin/game.o: src/game.c
 	$(CC) -o bin/game.o -c src/game.c
@@ -27,5 +26,14 @@ bin/user_interface.o: src/user_interface.c
 bin/leaderboard.o: src/leaderboard.c
 	$(CC) -o bin/leaderboard.o -c src/leaderboard.c
 
+bin/test_board.o: test/test_board.c
+	$(CC) -o bin/test_board.o -c test/test_board.c
+
 clean:
-	rm -f bin/*.o
+	rm -f bin/*.o bin/test_board
+
+
+
+test: bin/test_board.o bin/board.o bin/user_interface.o bin/leaderboard.o
+	mkdir -p test
+	$(CC) -o bin/test_board bin/test_board.o bin/board.o bin/user_interface.o bin/leaderboard.o $(LDFLAGS)
