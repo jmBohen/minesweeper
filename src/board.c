@@ -13,7 +13,6 @@
 //creating empty board ready for first click; includes set settings
 Board create_empty_board(){
     Board board = malloc(sizeof(*board));
-    
     set_settings(board);
     board -> number_of_revealed_squares = 0;
     board -> squares = malloc(board -> size_c * board -> size_r * sizeof(Square));
@@ -78,7 +77,7 @@ int** get_neighbours(Board board, int r, int c){
 void set_settings(Board board) {
     char symbol = '\0';
     int number = 0;
-
+    
     while (1) {
         printw(SETTINGS_QUERY);
         refresh();

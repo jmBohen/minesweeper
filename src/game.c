@@ -17,7 +17,7 @@ int main(int argc, char *argv[]){
     while ((opt = getopt(argc, argv, "f:t")) != -1) {
         switch (opt) {
             case 'f':
-                filepath = optarg;
+                filepath = opt;
                 break;
             case 't':
               	start_game_tui(game);
